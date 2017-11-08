@@ -7,17 +7,17 @@ class ReservationsController < ApplicationController
   end
 
   def take
-    book.take(current_user) if book.can_take?(current_user)
+    reservations_handler.take(book)
     redirect_to(book_path(book.id))
   end
 
   def give_back
-    book.give_back if book.can_give_back?(current_user)
+    reservations_handler.give_back(book) 
     redirect_to(book_path(book.id))
   end
 
   def cancel
-    book.cancel_reservation(current_user)
+    reservations_handler.cancel_reservation(book)
     redirect_to(book_path(book.id))
   end
 
@@ -25,6 +25,11 @@ class ReservationsController < ApplicationController
   end
 
   private
+
+  def reservations_handler
+    ::ReservationsHandler.new(current_user)
+  end
+
 
   def book
     @book ||= Book.find(params[:book_id])
